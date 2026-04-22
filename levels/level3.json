@@ -1,0 +1,19 @@
+{
+  "name": "Tamanho",
+  "background_color": [10, 25, 15],
+  "mirror_line_x": 450,
+  "player_start": [60, 510],
+  "exit": [790, 130, 40, 50],
+  "platforms": [
+    {"x": 0,   "y": 550, "w": 900, "h": 20, "rotating": false},
+    {"x": 40,  "y": 460, "w": 130, "h": 15, "rotating": false},
+    {"x": 220, "y": 380, "w": 100, "h": 50, "rotating": false},
+    {"x": 380, "y": 310, "w": 130, "h": 15, "rotating": false},
+    {"x": 540, "y": 240, "w": 100, "h": 50, "rotating": false},
+    {"x": 700, "y": 170, "w": 170, "h": 15, "rotating": false}
+  ],
+  "powerups": [
+    {"x": 160, "y": 420, "kind": "shrink"},
+    {"x": 470, "y": 270, "kind": "grow"}
+  ]
+}

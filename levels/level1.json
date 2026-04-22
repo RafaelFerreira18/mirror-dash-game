@@ -1,0 +1,15 @@
+{
+  "name": "Tutorial",
+  "background_color": [15, 15, 45],
+  "mirror_line_x": 450,
+  "player_start": [100, 510],
+  "exit": [770, 290, 40, 50],
+  "platforms": [
+    {"x": 0,   "y": 550, "w": 900, "h": 20, "rotating": false},
+    {"x": 100, "y": 460, "w": 140, "h": 15, "rotating": false},
+    {"x": 300, "y": 400, "w": 140, "h": 15, "rotating": false},
+    {"x": 500, "y": 400, "w": 140, "h": 15, "rotating": false},
+    {"x": 650, "y": 340, "w": 180, "h": 15, "rotating": false}
+  ],
+  "powerups": []
+}

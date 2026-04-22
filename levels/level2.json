@@ -1,0 +1,16 @@
+{
+  "name": "Giro",
+  "background_color": [20, 10, 40],
+  "mirror_line_x": 450,
+  "player_start": [80, 510],
+  "exit": [760, 160, 40, 50],
+  "platforms": [
+    {"x": 0,   "y": 550, "w": 900, "h": 20, "rotating": false},
+    {"x": 60,  "y": 460, "w": 140, "h": 15, "rotating": false},
+    {"x": 230, "y": 390, "w": 150, "h": 15, "rotating": true, "speed": 0.6},
+    {"x": 400, "y": 320, "w": 140, "h": 15, "rotating": true, "speed": -0.8},
+    {"x": 580, "y": 260, "w": 140, "h": 15, "rotating": true, "speed": 0.7},
+    {"x": 720, "y": 195, "w": 150, "h": 15, "rotating": false}
+  ],
+  "powerups": []
+}
