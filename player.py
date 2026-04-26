@@ -10,6 +10,7 @@ Transformações aplicadas:
   - Reflexão   : get_sprite() usa reflect_surface() para o personagem espelho (P2)
 """
 
+import math
 import pygame
 from settings import (
     GRAVITY, JUMP_FORCE, COLOR_PLAYER1, COLOR_PLAYER2,
@@ -94,17 +95,25 @@ class Player:
 
     def apply_scale_powerup(self, sx, sy, duration_frames):
         """[TRANSFORMAÇÃO] Escala — altera tamanho durante duration_frames quadros."""
+        # Ancora o fundo do jogador: ao mudar de altura, y é ajustado
+        # para que a base do sprite não atravesse a plataforma.
+        old_bottom = self.y + self.height
         self.scale_x = sx
         self.scale_y = sy
         self.scale_timer = duration_frames
+        # Reposiciona y para que o fundo permaneça no mesmo lugar
+        self.y = old_bottom - self.height
 
     def update_scale(self):
         """Conta regressiva do power-up de escala; restaura tamanho ao expirar."""
         if self.scale_timer > 0:
             self.scale_timer -= 1
             if self.scale_timer == 0:
+                old_bottom = self.y + self.height
                 self.scale_x = 1.0
                 self.scale_y = 1.0
+                # Reposiciona y para que o fundo permaneça no mesmo lugar
+                self.y = old_bottom - self.height
 
     def get_sprite(self):
         """
@@ -134,6 +143,9 @@ class Player:
 
         A gravidade é implementada como translação incremental em Y:
             y_new = y + vy,  onde vy aumenta GRAVITY por frame (queda livre).
+
+        Plataformas giratórias aplicam escorregamento proporcional à
+        inclinação: quanto mais inclinada, maior a força horizontal.
         """
         # Gravidade
         self.vy += GRAVITY
@@ -151,22 +163,37 @@ class Player:
 
         was_on_ground = self.on_ground
         self.on_ground = False
+        self._slide_vx = 0.0
 
         for plat in platforms:
             prect = plat.get_collision_rect()
             if self.rect.colliderect(prect):
-                # Plataforma giratória inclinada demais → não colide, player cai
-                if not plat.is_landable():
-                    continue
                 if self.vy >= 0 and old_bottom <= prect.top + 8:
                     # Estava acima → pousa no topo da plataforma
                     self.y = prect.top - self.height
                     self.vy = 0.0
                     self.on_ground = True
+
+                    # [TRANSFORMAÇÃO] Translação — plataforma móvel carrega o jogador
+                    carry = plat.get_carry_vx()
+                    if carry != 0.0:
+                        self.move(carry, 0)
+
+                    # Escorregamento em plataformas giratórias
+                    if plat.rotating:
+                        tilt = plat.get_tilt()
+                        # sin(tilt) dá a componente horizontal da "gravidade"
+                        # Fator 0.35 controla a intensidade do escorregamento
+                        self._slide_vx = math.sin(math.radians(tilt)) * 0.35 * GRAVITY * 18
+
                 elif self.vy < 0 and old_top >= prect.bottom - 8:
                     # Estava abaixo → bateu a cabeça
                     self.y = prect.bottom
                     self.vy = 0.0
+
+        # Aplica escorregamento como força horizontal
+        if self._slide_vx != 0.0:
+            self.move(self._slide_vx, 0)
 
         # Coyote time: permite pular por alguns frames após cair de plataforma
         if self.on_ground:
@@ -203,7 +230,23 @@ class Player:
     # ------------------------------------------------------------------
 
     def draw(self, surface):
-        surface.blit(self.get_sprite(), (int(self.x), int(self.y)))
+        sprite = self.get_sprite()
+        # Brilho ao redor do personagem quando power-up ativo
+        if self.scale_timer > 0:
+            glow_alpha = 50 + int(30 * (self.scale_timer / 180))
+            if self.scale_x > 1:
+                glow_color = (255, 180, 50, glow_alpha)
+            else:
+                glow_color = (100, 220, 255, glow_alpha)
+            glow_surf = pygame.Surface(
+                (sprite.get_width() + 10, sprite.get_height() + 10),
+                pygame.SRCALPHA)
+            pygame.draw.rect(glow_surf, glow_color,
+                             (0, 0, glow_surf.get_width(),
+                              glow_surf.get_height()),
+                             border_radius=8)
+            surface.blit(glow_surf, (int(self.x) - 5, int(self.y) - 5))
+        surface.blit(sprite, (int(self.x), int(self.y)))
 
     def reset(self):
         self.x = self.start_x

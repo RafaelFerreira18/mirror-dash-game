@@ -23,3 +23,5 @@ STATE_PLAYING    = "playing"
 STATE_WIN        = "win"
 STATE_GAMEOVER   = "gameover"
 STATE_TRANSITION = "transition"
+
+TRANSITION_FRAMES = 120   # ~2 s a 60 fps

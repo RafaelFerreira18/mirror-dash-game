@@ -1,19 +1,27 @@
 {
-  "name": "Tamanho",
-  "background_color": [10, 25, 15],
+  "name": "Equilíbrio Instável",
+  "background_color": [8, 28, 12],
   "mirror_line_x": 450,
-  "player_start": [60, 510],
-  "exit": [790, 130, 40, 50],
+  "player_start": [60, 518],
+  "exit": [800, 108, 44, 58],
+  "hint": "Lasers bloqueiam os saltos! Tempo o pulo entre as giratórias.",
   "platforms": [
-    {"x": 0,   "y": 550, "w": 900, "h": 20, "rotating": false},
-    {"x": 40,  "y": 460, "w": 130, "h": 15, "rotating": false},
-    {"x": 220, "y": 380, "w": 100, "h": 50, "rotating": false},
-    {"x": 380, "y": 310, "w": 130, "h": 15, "rotating": false},
-    {"x": 540, "y": 240, "w": 100, "h": 50, "rotating": false},
-    {"x": 700, "y": 170, "w": 170, "h": 15, "rotating": false}
+    {"x": 0,   "y": 550, "w": 900, "h": 30, "rotating": false},
+    {"x": 40,  "y": 468, "w": 140, "h": 16, "moving": true, "move_dx": 1.4, "move_x_min": 20, "move_x_max": 160},
+    {"x": 230, "y": 390, "w": 150, "h": 16, "rotating": true, "speed": 0.4},
+    {"x": 430, "y": 312, "w": 150, "h": 16, "rotating": true, "speed": -0.5},
+    {"x": 630, "y": 238, "w": 140, "h": 16, "rotating": true, "speed": 0.45},
+    {"x": 760, "y": 165, "w": 135, "h": 16, "rotating": false}
+  ],
+  "spikes": [
+    {"x": 190, "y": 534, "w": 230},
+    {"x": 580, "y": 534, "w": 170}
+  ],
+  "lasers": [
+    {"x": 160, "y": 420, "w": 80, "on": 80, "off": 110, "offset": 0},
+    {"x": 580, "y": 258, "w": 60, "on": 70, "off": 90,  "offset": 40}
   ],
   "powerups": [
-    {"x": 160, "y": 420, "kind": "shrink"},
-    {"x": 470, "y": 270, "kind": "grow"}
+    {"x": 100, "y": 425, "kind": "grow"}
   ]
 }

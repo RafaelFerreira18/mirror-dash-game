@@ -13,7 +13,7 @@ Transformações aplicadas:
 import pygame
 import math
 from settings import COLOR_PLATFORM
-from transforms import rotate_point
+from transforms import rotate_point, translate
 
 
 class Platform:
@@ -30,7 +30,10 @@ class Platform:
     """
 
     def __init__(self, x, y, width, height,
-                 rotating=False, rotation_speed=1.0, color=COLOR_PLATFORM):
+                 rotating=False, rotation_speed=1.0, color=COLOR_PLATFORM,
+                 moving=False, move_dx=0.0, move_dy=0.0,
+                 move_x_min=None, move_x_max=None,
+                 move_y_min=None, move_y_max=None):
         self.base_x = x
         self.base_y = y
         self.width  = width
@@ -39,6 +42,16 @@ class Platform:
         self.rotation_speed = rotation_speed
         self.angle = 0.0
         self.color = color
+        # [TRANSFORMAÇÃO] Translação — campos de movimento
+        self.moving     = moving
+        self.move_dx    = move_dx
+        self.move_dy    = move_dy
+        self.move_x_min = move_x_min if move_x_min is not None else x
+        self.move_x_max = move_x_max if move_x_max is not None else x
+        self.move_y_min = move_y_min if move_y_min is not None else y
+        self.move_y_max = move_y_max if move_y_max is not None else y
+        self._move_dir_x = 1
+        self._move_dir_y = 1
         self._build_surface()
 
     def _build_surface(self):
@@ -49,6 +62,17 @@ class Platform:
         # Linha decorativa no topo
         highlight = tuple(min(c + 60, 255) for c in self.color)
         pygame.draw.line(self._surface, highlight, (3, 2), (self.width - 3, 2), 2)
+        # Indicador visual para plataformas móveis: setas ↔
+        if getattr(self, 'moving', False):
+            arrow_col = (220, 255, 200)
+            mid_y = self.height // 2
+            for xi in [self.width // 4, self.width // 2, 3 * self.width // 4]:
+                # Seta apontando para a direita
+                pygame.draw.polygon(self._surface, arrow_col, [
+                    (xi - 3, mid_y - 3),
+                    (xi + 3, mid_y),
+                    (xi - 3, mid_y + 3),
+                ])
 
     @property
     def rect(self):
@@ -79,26 +103,60 @@ class Platform:
         max_y = int(max(ys))
         return pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
 
-    def is_landable(self):
+    def get_tilt(self):
         """
-        Retorna True se a plataforma está suficientemente horizontal
-        para o jogador pousar. Plataformas estáticas são sempre pousáveis.
-
-        Plataformas giratórias só permitem pouso quando o ângulo está
-        dentro de ±35° de 0° ou 180° (superfície quase horizontal).
+        Retorna a inclinação efetiva da plataforma em graus [-90, 90].
+        0 = perfeitamente horizontal. Valores positivos = inclinada para a direita.
+        Plataformas estáticas sempre retornam 0.
         """
         if not self.rotating:
-            return True
-        # Normaliza ângulo para 0-360
+            return 0.0
+        # Normaliza para -180..180
         a = self.angle % 360
-        # Distância angular até a horizontal mais próxima (0° ou 180°)
-        tilt = min(a % 180, 180 - (a % 180))
-        return tilt <= 35
+        if a > 180:
+            a -= 360
+        # Mapeia para -90..90 (superfície pode estar "de cabeça pra baixo")
+        if a > 90:
+            a = 180 - a
+        elif a < -90:
+            a = -180 - a
+        return a
+
+    def get_carry_vx(self):
+        """
+        [TRANSFORMAÇÃO] Translação — retorna a velocidade horizontal atual
+        para ser aplicada ao jogador que está em cima da plataforma.
+        """
+        if self.moving and self.move_dx != 0.0:
+            return self.move_dx * self._move_dir_x
+        return 0.0
 
     def update(self):
-        """[TRANSFORMAÇÃO] Rotação — incrementa o ângulo de rotação a cada frame."""
+        """[TRANSFORMAÇÃO] Rotação e Translação — atualiza estado a cada frame."""
         if self.rotating:
             self.angle = (self.angle + self.rotation_speed) % 360
+
+        if self.moving:
+            # [TRANSFORMAÇÃO] Translação — usa translate() de transforms.py
+            nx, ny = translate(self.base_x, self.base_y,
+                               self.move_dx * self._move_dir_x,
+                               self.move_dy * self._move_dir_y)
+            if self.move_dx != 0.0:
+                if nx <= self.move_x_min:
+                    self._move_dir_x = 1
+                    nx = self.move_x_min
+                elif nx >= self.move_x_max:
+                    self._move_dir_x = -1
+                    nx = self.move_x_max
+            if self.move_dy != 0.0:
+                if ny <= self.move_y_min:
+                    self._move_dir_y = 1
+                    ny = self.move_y_min
+                elif ny >= self.move_y_max:
+                    self._move_dir_y = -1
+                    ny = self.move_y_max
+            self.base_x = nx
+            self.base_y = ny
 
     def get_rotated_corners(self):
         """
@@ -118,21 +176,10 @@ class Platform:
 
     def draw(self, surface):
         if self.rotating:
-            # Recria surface com cor indicando se é pousável
             draw_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            if self.is_landable():
-                # Cor normal — seguro para pousar
-                draw_color = self.color
-            else:
-                # Vermelho/escuro semi-transparente — perigoso, não dá pra pousar
-                draw_color = (
-                    min(self.color[0] + 80, 255),
-                    max(self.color[1] - 80, 30),
-                    max(self.color[2] - 80, 30),
-                )
-            pygame.draw.rect(draw_surf, draw_color,
+            pygame.draw.rect(draw_surf, self.color,
                              (0, 0, self.width, self.height), border_radius=4)
-            highlight = tuple(min(c + 60, 255) for c in draw_color)
+            highlight = tuple(min(c + 60, 255) for c in self.color)
             pygame.draw.line(draw_surf, highlight, (3, 2), (self.width - 3, 2), 2)
 
             # Rotaciona a surface do pygame em torno do centro

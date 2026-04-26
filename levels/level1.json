@@ -1,15 +1,21 @@
 {
-  "name": "Tutorial",
-  "background_color": [15, 15, 45],
+  "name": "Primeiro Reflexo",
+  "background_color": [12, 12, 40],
   "mirror_line_x": 450,
-  "player_start": [100, 510],
-  "exit": [770, 290, 40, 50],
+  "player_start": [100, 518],
+  "exit": [780, 268, 44, 56],
+  "hint": "P2 espelha P1. Guie ambos até a META! Cuidado com os espinhos no chão.",
   "platforms": [
-    {"x": 0,   "y": 550, "w": 900, "h": 20, "rotating": false},
-    {"x": 100, "y": 460, "w": 140, "h": 15, "rotating": false},
-    {"x": 300, "y": 400, "w": 140, "h": 15, "rotating": false},
-    {"x": 500, "y": 400, "w": 140, "h": 15, "rotating": false},
-    {"x": 650, "y": 340, "w": 180, "h": 15, "rotating": false}
+    {"x": 0,   "y": 550, "w": 900, "h": 30, "rotating": false},
+    {"x": 70,  "y": 468, "w": 180, "h": 16, "rotating": false},
+    {"x": 330, "y": 396, "w": 150, "h": 16, "rotating": false},
+    {"x": 560, "y": 396, "w": 150, "h": 16, "rotating": false},
+    {"x": 740, "y": 324, "w": 155, "h": 16, "rotating": false}
   ],
+  "spikes": [
+    {"x": 260, "y": 534, "w": 60},
+    {"x": 490, "y": 534, "w": 60}
+  ],
+  "lasers": [],
   "powerups": []
 }

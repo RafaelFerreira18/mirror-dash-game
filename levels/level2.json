@@ -1,16 +1,30 @@
 {
-  "name": "Giro",
-  "background_color": [20, 10, 40],
+  "name": "Passagem dos Espinhos",
+  "background_color": [22, 10, 42],
   "mirror_line_x": 450,
-  "player_start": [80, 510],
-  "exit": [760, 160, 40, 50],
+  "player_start": [80, 518],
+  "exit": [790, 122, 44, 56],
+  "hint": "Laser bloqueia o salto! Espere desligar antes de pular.",
   "platforms": [
-    {"x": 0,   "y": 550, "w": 900, "h": 20, "rotating": false},
-    {"x": 60,  "y": 460, "w": 140, "h": 15, "rotating": false},
-    {"x": 230, "y": 390, "w": 150, "h": 15, "rotating": true, "speed": 0.6},
-    {"x": 400, "y": 320, "w": 140, "h": 15, "rotating": true, "speed": -0.8},
-    {"x": 580, "y": 260, "w": 140, "h": 15, "rotating": true, "speed": 0.7},
-    {"x": 720, "y": 195, "w": 150, "h": 15, "rotating": false}
+    {"x": 0,   "y": 550, "w": 900, "h": 30, "rotating": false},
+    {"x": 50,  "y": 468, "w": 150, "h": 16, "rotating": false},
+    {"x": 260, "y": 395, "w": 120, "h": 16, "rotating": false},
+    {"x": 450, "y": 322, "w": 120, "h": 16, "moving": true, "move_dx": 1.8, "move_x_min": 370, "move_x_max": 510},
+    {"x": 640, "y": 250, "w": 110, "h": 16, "rotating": false},
+    {"x": 755, "y": 178, "w": 140, "h": 16, "rotating": false}
   ],
-  "powerups": []
+  "spikes": [
+    {"x": 260, "y": 379, "w": 40, "h": 16},
+    {"x": 640, "y": 234, "w": 35, "h": 16},
+    {"x": 215, "y": 534, "w": 40},
+    {"x": 395, "y": 534, "w": 50},
+    {"x": 535, "y": 534, "w": 40}
+  ],
+  "lasers": [
+    {"x": 185, "y": 415, "w": 90,  "on": 90, "off": 80,  "offset": 0},
+    {"x": 515, "y": 270, "w": 120, "on": 80, "off": 100, "offset": 45}
+  ],
+  "powerups": [
+    {"x": 120, "y": 425, "kind": "shrink"}
+  ]
 }
